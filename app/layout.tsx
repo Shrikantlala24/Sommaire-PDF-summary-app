@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Source_Sans_3 as FontSans } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const fontSans = FontSans({
   variable: "--font-sans",
@@ -8,10 +9,16 @@ const fontSans = FontSans({
   weight: ['200','300','400','500','600','700','800','900']
 });
 
-
 export const metadata: Metadata = {
-  title: "Sommaire",
-  description: "Sommaire - an AI PDF summarizer",
+  title: "Sommaire - AI-Powered PDF to Carousel Generator",
+  description: "Transform your PDFs into interactive carousels with AI-powered summaries. Upload, analyze, and share beautiful slide presentations instantly.",
+  keywords: ["PDF summarizer", "AI carousel", "document analysis", "presentation maker", "PDF to slides"],
+  authors: [{ name: "Sommaire Team" }],
+  openGraph: {
+    title: "Sommaire - AI-Powered PDF to Carousel Generator",
+    description: "Transform your PDFs into interactive carousels with AI-powered summaries",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -20,11 +27,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${fontSans.variable} fontSans antialiased`}
+        className={`${fontSans.variable} font-sans antialiased`}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

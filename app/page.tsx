@@ -1,8 +1,23 @@
-import { Button } from "@/components/ui/button";
+import { Navigation } from "@/components/navigation"
+import { HeroSection } from "@/components/hero-section"
+import { CarouselDemo } from "@/components/carousel-demo"
+import { HowItWorksSection } from "@/components/how-it-works-section"
+import { FeaturesSection } from "@/components/features-section"
+import { PricingSection } from "@/components/pricing-section"
+import { Footer } from "@/components/footer"
+
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <Button>Shadcn button</Button>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main>
+        <HeroSection />
+        <CarouselDemo />
+        <HowItWorksSection />
+        <FeaturesSection />
+        <PricingSection />
+      </main>
+      <Footer />
     </div>
   );
 }
