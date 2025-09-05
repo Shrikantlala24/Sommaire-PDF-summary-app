@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 import { Menu, X, Presentation } from "lucide-react"
 
 export function Navigation() {
@@ -45,12 +46,17 @@ export function Navigation() {
           <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6 space-x-3">
               <ThemeToggle />
-              <Button variant="ghost" asChild>
-                <Link href="/login">Sign In</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/signup">Get Started</Link>
-              </Button>
+              <SignedOut>
+                <SignInButton>
+                  <Button variant="ghost">Sign In</Button>
+                </SignInButton>
+                <SignUpButton>
+                  <Button>Get Started</Button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
             </div>
           </div>
 
@@ -92,12 +98,19 @@ export function Navigation() {
                 <span className="text-sm text-muted-foreground">Toggle theme</span>
               </div>
               <div className="flex items-center px-3 space-x-3">
-                <Button variant="ghost" className="w-full" asChild>
-                  <Link href="/login">Sign In</Link>
-                </Button>
-                <Button className="w-full" asChild>
-                  <Link href="/signup">Get Started</Link>
-                </Button>
+                <SignedOut>
+                  <SignInButton>
+                    <Button variant="ghost" className="w-full">Sign In</Button>
+                  </SignInButton>
+                  <SignUpButton>
+                    <Button className="w-full">Get Started</Button>
+                  </SignUpButton>
+                </SignedOut>
+                <SignedIn>
+                  <div className="w-full flex justify-center">
+                    <UserButton />
+                  </div>
+                </SignedIn>
               </div>
             </div>
           </div>

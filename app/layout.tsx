@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Source_Sans_3 as FontSans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const fontSans = FontSans({
   variable: "--font-sans",
@@ -27,19 +28,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${fontSans.variable} font-sans antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={`${fontSans.variable} font-sans antialiased`}
         >
-          {children}
-        </ThemeProvider>
-      </body>
-    </html>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

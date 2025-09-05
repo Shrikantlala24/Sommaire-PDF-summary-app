@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Play, Presentation, Sparkles, Clock } from "lucide-react"
+import { SignUpButton } from "@clerk/nextjs"
 import Link from "next/link"
 
 export function HeroSection() {
@@ -26,12 +27,12 @@ export function HeroSection() {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-12">
-            <Button size="lg" className="text-lg px-8 py-3 h-auto" asChild>
-              <Link href="/signup">
+            <SignUpButton>
+              <Button size="lg" className="text-lg px-8 py-3 h-auto">
                 Start Summarizing Free
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+              </Button>
+            </SignUpButton>
             <Button variant="outline" size="lg" className="text-lg px-8 py-3 h-auto" asChild>
               <Link href="#demo">
                 <Play className="mr-2 h-5 w-5" />
