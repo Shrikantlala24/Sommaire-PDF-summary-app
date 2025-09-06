@@ -33,16 +33,45 @@ export default function UploadPage() {
         key: file.key,
       }))
       setUploadedFiles(prev => [...prev, ...newFiles])
+      console.log('Upload complete, files:', res)
+      console.log('File URLs for processing:', res.map((f: any) => ({ name: f.name, url: f.url, key: f.key })))
     }
   }
 
   const handleProcessDocuments = async () => {
+    if (uploadedFiles.length === 0) return;
+    
     setIsProcessing(true)
-    // Simulate processing
-    setTimeout(() => {
+    
+    try {
+      // Process each PDF file
+      for (const file of uploadedFiles) {
+        console.log(`Processing file: ${file.name} with URL: ${file.url}`)
+        
+        const response = await fetch('/api/process-pdf', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ fileKey: file.key }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log(`Processing result for ${file.name}:`, result);
+        } else {
+          const error = await response.json();
+          console.error(`Error processing ${file.name}:`, error);
+        }
+      }
+      
+      alert('Documents processed successfully! Check console for details.')
+    } catch (error) {
+      console.error('Processing error:', error);
+      alert('Error processing documents. Check console for details.')
+    } finally {
       setIsProcessing(false)
-      alert('Documents processed successfully! AI summaries are ready.')
-    }, 3000)
+    }
   }
 
   const removeFile = (key: string) => {
@@ -170,7 +199,7 @@ export default function UploadPage() {
 
         {/* Process Button */}
         {uploadedFiles.length > 0 && (
-          <div className="mt-8 text-center">
+          <div className="mt-8 flex justify-center space-x-4">
             <button 
               onClick={handleProcessDocuments}
               disabled={isProcessing}
@@ -187,6 +216,29 @@ export default function UploadPage() {
                   Process Documents ({uploadedFiles.length})
                 </>
               )}
+            </button>
+
+            <button 
+              onClick={() => {
+                if (uploadedFiles.length > 0) {
+                  const file = uploadedFiles[0];
+                  fetch('/api/demo-pdf-processing', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fileUrl: file.url, fileName: file.name }),
+                  })
+                  .then(res => res.json())
+                  .then(data => {
+                    console.log('Demo result:', data);
+                    alert('Demo complete! Check console for PDF URL details.');
+                  })
+                  .catch(err => console.error('Demo error:', err));
+                }
+              }}
+              className="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+            >
+              <CheckCircle className="w-5 h-5 mr-2" />
+              Demo PDF URL Access
             </button>
           </div>
         )}

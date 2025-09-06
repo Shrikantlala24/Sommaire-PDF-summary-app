@@ -4,6 +4,17 @@ import { auth } from '@clerk/nextjs/server';
 
 const f = createUploadthing();
 
+// Store uploaded files (in production, you'd use a database)
+const uploadedFiles: Array<{
+  id: string;
+  userId: string;
+  fileName: string;
+  fileUrl: string;
+  fileSize: number;
+  uploadedAt: Date;
+  processed: boolean;
+}> = [];
+
 // FileRouter for your app, can upload PDFs and documents
 export const ourFileRouter = {
   // PDF and document uploader
@@ -26,6 +37,22 @@ export const ourFileRouter = {
       console.log("file url", file.url);
       console.log("file name", file.name);
       
+      // Store file information
+      const fileRecord = {
+        id: file.key,
+        userId: metadata.userId,
+        fileName: file.name,
+        fileUrl: file.url,
+        fileSize: file.size,
+        uploadedAt: new Date(),
+        processed: false
+      };
+      
+      uploadedFiles.push(fileRecord);
+      
+      // TODO: Process PDF with LangChain here
+      console.log("PDF ready for processing:", fileRecord);
+      
       // Here you can save file info to your database
       // await db.file.create({
       //   data: {
@@ -36,7 +63,12 @@ export const ourFileRouter = {
       //   },
       // });
       
-      return { uploadedBy: metadata.userId, fileName: file.name };
+      return { 
+        uploadedBy: metadata.userId, 
+        fileName: file.name,
+        fileUrl: file.url,
+        fileKey: file.key
+      };
     }),
 
   // Document uploader (DOC, DOCX, TXT)
@@ -58,8 +90,39 @@ export const ourFileRouter = {
       console.log("file url", file.url);
       console.log("file name", file.name);
       
-      return { uploadedBy: metadata.userId, fileName: file.name };
+      // Store file information
+      const fileRecord = {
+        id: file.key,
+        userId: metadata.userId,
+        fileName: file.name,
+        fileUrl: file.url,
+        fileSize: file.size,
+        uploadedAt: new Date(),
+        processed: false
+      };
+      
+      uploadedFiles.push(fileRecord);
+      
+      // TODO: Process document with LangChain here
+      console.log("Document ready for processing:", fileRecord);
+      
+      return { 
+        uploadedBy: metadata.userId, 
+        fileName: file.name,
+        fileUrl: file.url,
+        fileKey: file.key
+      };
     }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
+
+// Export function to get uploaded files for a user
+export function getUserFiles(userId: string) {
+  return uploadedFiles.filter(file => file.userId === userId);
+}
+
+// Export function to get a specific file
+export function getFileByKey(fileKey: string) {
+  return uploadedFiles.find(file => file.id === fileKey);
+}
