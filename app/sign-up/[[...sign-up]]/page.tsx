@@ -120,6 +120,7 @@ export default function Page() {
                 fontFamily: "inherit"
               }
             }}
+            redirectUrl="/upload"
           />
           
           <div className="mt-4 text-center">
