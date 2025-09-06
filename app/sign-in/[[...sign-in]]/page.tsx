@@ -5,7 +5,7 @@ export default function Page() {
   return (
     <div className="flex min-h-screen bg-background">
       {/* Left Side - Welcome Section */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 relative overflow-hidden">
+  <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative z-10 flex flex-col justify-center px-16 py-12 text-white max-w-lg mx-auto">
           <div className="mb-12">
@@ -13,11 +13,10 @@ export default function Page() {
               <FileText className="w-10 h-10" />
             </div>
             <h1 className="text-5xl font-bold mb-6 leading-tight">Welcome Back to Sommaire</h1>
-            <p className="text-xl text-purple-100 leading-relaxed">
+            <p className="text-xl text-blue-100 leading-relaxed">
               Transform your PDFs into engaging visual stories with AI-powered summaries
             </p>
           </div>
-          
           {/* Feature Steps */}
           <div className="space-y-6">
             <div className="flex items-start space-x-5">
@@ -26,27 +25,25 @@ export default function Page() {
               </div>
               <div className="pt-1">
                 <h3 className="font-bold mb-2 text-lg">Upload Your PDF</h3>
-                <p className="text-purple-100 text-base leading-relaxed">Simply drag and drop your PDF document to get started</p>
+                <p className="text-blue-100 text-base leading-relaxed">Simply drag and drop your PDF document to get started</p>
               </div>
             </div>
-            
             <div className="flex items-start space-x-5">
               <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl backdrop-blur-sm flex-shrink-0 border border-white/30">
                 <Sparkles className="w-6 h-6" />
               </div>
               <div className="pt-1">
                 <h3 className="font-bold mb-2 text-lg">AI Magic Happens</h3>
-                <p className="text-purple-100 text-base leading-relaxed">Our AI analyzes and creates beautiful visual summaries</p>
+                <p className="text-blue-100 text-base leading-relaxed">Our AI analyzes and creates beautiful visual summaries</p>
               </div>
             </div>
-            
             <div className="flex items-start space-x-5">
               <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl backdrop-blur-sm flex-shrink-0 border border-white/30">
                 <Share2 className="w-6 h-6" />
               </div>
               <div className="pt-1">
                 <h3 className="font-bold mb-2 text-lg">Share & Present</h3>
-                <p className="text-purple-100 text-base leading-relaxed">Export or share your stunning carousel presentations</p>
+                <p className="text-blue-100 text-base leading-relaxed">Export or share your stunning carousel presentations</p>
               </div>
             </div>
           </div>
