@@ -3,6 +3,9 @@ import { Source_Sans_3 as FontSans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "./api/uploadthing/core";
 
 const fontSans = FontSans({
   variable: "--font-sans",
@@ -33,6 +36,9 @@ export default function RootLayout({
         <body
           className={`${fontSans.variable} font-sans antialiased`}
         >
+          <NextSSRPlugin
+            routerConfig={extractRouterConfig(ourFileRouter)}
+          />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

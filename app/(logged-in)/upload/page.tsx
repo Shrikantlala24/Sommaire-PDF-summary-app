@@ -1,77 +1,20 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { Upload, FileText, X, CheckCircle, AlertCircle } from 'lucide-react'
+import { useState } from 'react'
+import { FileText, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 import { UserButton } from '@clerk/nextjs'
+import { UploadDropzone } from '../../../lib/uploadthing'
 
 interface UploadedFile {
-  id: string
   name: string
+  url: string
   size: number
-  type: string
-  status: 'uploading' | 'success' | 'error'
-  progress: number
+  key: string
 }
 
 export default function UploadPage() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles: UploadedFile[] = acceptedFiles.map((file) => ({
-      id: Math.random().toString(36).substring(7),
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      status: 'uploading',
-      progress: 0,
-    }))
-
-    setUploadedFiles((prev) => [...prev, ...newFiles])
-
-    // Simulate file upload
-    newFiles.forEach((file) => {
-      simulateUpload(file.id)
-    })
-  }, [])
-
-  const simulateUpload = (fileId: string) => {
-    let progress = 0
-    const interval = setInterval(() => {
-      progress += 10
-      if (progress <= 100) {
-        setUploadedFiles((prev) =>
-          prev.map((file) =>
-            file.id === fileId
-              ? {
-                  ...file,
-                  progress,
-                  status: progress === 100 ? 'success' : 'uploading',
-                }
-              : file
-          )
-        )
-        if (progress === 100) {
-          clearInterval(interval)
-        }
-      }
-    }, 200)
-  }
-
-  const removeFile = (fileId: string) => {
-    setUploadedFiles((prev) => prev.filter((file) => file.id !== fileId))
-  }
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'application/pdf': ['.pdf'],
-      'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-      'text/plain': ['.txt'],
-    },
-    multiple: true,
-  })
+  const [isProcessing, setIsProcessing] = useState(false)
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes'
@@ -79,6 +22,31 @@ export default function UploadPage() {
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  }
+
+  const handleUploadComplete = (res: any) => {
+    if (res) {
+      const newFiles = res.map((file: any) => ({
+        name: file.name,
+        url: file.url,
+        size: file.size,
+        key: file.key,
+      }))
+      setUploadedFiles(prev => [...prev, ...newFiles])
+    }
+  }
+
+  const handleProcessDocuments = async () => {
+    setIsProcessing(true)
+    // Simulate processing
+    setTimeout(() => {
+      setIsProcessing(false)
+      alert('Documents processed successfully! AI summaries are ready.')
+    }, 3000)
+  }
+
+  const removeFile = (key: string) => {
+    setUploadedFiles(prev => prev.filter(file => file.key !== key))
   }
 
   return (
@@ -105,40 +73,50 @@ export default function UploadPage() {
             Upload Your Documents
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Upload your PDF documents, Word files, or text documents to create beautiful visual summaries with AI.
+            Upload your PDF documents to create beautiful visual summaries with AI.
           </p>
         </div>
 
         {/* Upload Area */}
         <div className="mb-8">
-          <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 cursor-pointer ${
-              isDragActive
-                ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-            }`}
-          >
-            <input {...getInputProps()} />
-            <div className="flex flex-col items-center space-y-4">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                <Upload className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  {isDragActive ? 'Drop your files here' : 'Drag & drop files here'}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  or click to browse your files
-                </p>
-                <div className="flex flex-wrap justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                  <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full">PDF</span>
-                  <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full">DOC</span>
-                  <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full">DOCX</span>
-                  <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full">TXT</span>
-                </div>
-              </div>
-            </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <UploadDropzone
+              endpoint="pdfUploader"
+              onClientUploadComplete={handleUploadComplete}
+              onUploadError={(error: Error) => {
+                alert(`ERROR! ${error.message}`)
+              }}
+              appearance={{
+                container: "w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center transition-colors hover:border-blue-400 dark:hover:border-blue-500",
+                uploadIcon: "text-blue-600 dark:text-blue-400 mb-4",
+                label: "text-gray-900 dark:text-white text-lg font-semibold mb-2",
+                allowedContent: "text-gray-500 dark:text-gray-400 text-sm",
+                button: "inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm ut-ready:bg-blue-600 ut-uploading:bg-blue-500",
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Document Upload Alternative */}
+        <div className="mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Or upload text documents
+            </h3>
+            <UploadDropzone
+              endpoint="documentUploader"
+              onClientUploadComplete={handleUploadComplete}
+              onUploadError={(error: Error) => {
+                alert(`ERROR! ${error.message}`)
+              }}
+              appearance={{
+                container: "w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center transition-colors hover:border-green-400 dark:hover:border-green-500",
+                uploadIcon: "text-green-600 dark:text-green-400 mb-4",
+                label: "text-gray-900 dark:text-white text-base font-medium mb-2",
+                allowedContent: "text-gray-500 dark:text-gray-400 text-sm",
+                button: "inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors shadow-sm ut-ready:bg-green-600 ut-uploading:bg-green-500",
+              }}
+            />
           </div>
         </div>
 
@@ -153,7 +131,7 @@ export default function UploadPage() {
             <div className="p-6 space-y-4">
               {uploadedFiles.map((file) => (
                 <div
-                  key={file.id}
+                  key={file.key}
                   className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
                 >
                   <div className="flex-shrink-0">
@@ -166,32 +144,22 @@ export default function UploadPage() {
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       {formatFileSize(file.size)}
                     </p>
-                    {file.status === 'uploading' && (
-                      <div className="mt-2">
-                        <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${file.progress}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          Uploading... {file.progress}%
-                        </p>
-                      </div>
-                    )}
+                    <a 
+                      href={file.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                      View file
+                    </a>
                   </div>
                   <div className="flex-shrink-0 flex items-center space-x-2">
-                    {file.status === 'success' && (
-                      <CheckCircle className="w-5 h-5 text-green-500" />
-                    )}
-                    {file.status === 'error' && (
-                      <AlertCircle className="w-5 h-5 text-red-500" />
-                    )}
+                    <CheckCircle className="w-5 h-5 text-green-500" />
                     <button
-                      onClick={() => removeFile(file.id)}
+                      onClick={() => removeFile(file.key)}
                       className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full transition-colors"
                     >
-                      <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      <AlertCircle className="w-4 h-4 text-red-500" />
                     </button>
                   </div>
                 </div>
@@ -201,11 +169,24 @@ export default function UploadPage() {
         )}
 
         {/* Process Button */}
-        {uploadedFiles.some((file) => file.status === 'success') && (
+        {uploadedFiles.length > 0 && (
           <div className="mt-8 text-center">
-            <button className="inline-flex items-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm">
-              <FileText className="w-5 h-5 mr-2" />
-              Process Documents ({uploadedFiles.filter((f) => f.status === 'success').length})
+            <button 
+              onClick={handleProcessDocuments}
+              disabled={isProcessing}
+              className="inline-flex items-center px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors shadow-sm"
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Processing Documents...
+                </>
+              ) : (
+                <>
+                  <FileText className="w-5 h-5 mr-2" />
+                  Process Documents ({uploadedFiles.length})
+                </>
+              )}
             </button>
           </div>
         )}

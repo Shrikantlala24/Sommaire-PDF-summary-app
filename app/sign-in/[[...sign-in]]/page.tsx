@@ -79,6 +79,8 @@ export default function Page() {
           </div>
           
           <SignIn 
+            forceRedirectUrl="/upload"
+            signUpUrl="/sign-up"
             appearance={{
               elements: {
                 rootBox: "w-full",
