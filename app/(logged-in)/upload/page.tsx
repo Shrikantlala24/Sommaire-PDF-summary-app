@@ -222,23 +222,30 @@ export default function UploadPage() {
               onClick={() => {
                 if (uploadedFiles.length > 0) {
                   const file = uploadedFiles[0];
-                  fetch('/api/demo-pdf-processing', {
+                  fetch('/api/test-langchain', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ fileUrl: file.url, fileName: file.name }),
                   })
                   .then(res => res.json())
                   .then(data => {
-                    console.log('Demo result:', data);
-                    alert('Demo complete! Check console for PDF URL details.');
+                    console.log('🧪 LangChain Test Result:', data);
+                    if (data.success) {
+                      alert(`✅ LangChain Test Successful!\n\n📊 Results:\n- ${data.results.totalPages} pages processed\n- ${data.results.chunksCreated} text chunks created\n- ${data.results.wordCount} words extracted\n- Processing time: ${data.results.processingTime}ms\n\nCheck console for detailed results!`);
+                    } else {
+                      alert(`❌ Test Failed: ${data.details}`);
+                    }
                   })
-                  .catch(err => console.error('Demo error:', err));
+                  .catch(err => {
+                    console.error('LangChain test error:', err);
+                    alert('❌ Test request failed. Check console for details.');
+                  });
                 }
               }}
-              className="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+              className="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors shadow-sm"
             >
               <CheckCircle className="w-5 h-5 mr-2" />
-              Demo PDF URL Access
+              Test LangChain Integration
             </button>
           </div>
         )}
