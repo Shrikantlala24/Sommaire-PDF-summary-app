@@ -1,0 +1,139 @@
+/* Additional styles for markdown content */
+.markdown-content {
+  font-size: 1rem;
+  line-height: 1.625;
+}
+
+.markdown-content h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .markdown-content h1 {
+  border-bottom-color: #4b5563;
+}
+
+.markdown-content h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+}
+
+.markdown-content h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.markdown-content p {
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content ul {
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+}
+
+.markdown-content ol {
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #3b82f6;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #6b7280;
+}
+
+.dark .markdown-content blockquote {
+  color: #9ca3af;
+}
+
+.markdown-content code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.dark .markdown-content code {
+  background-color: #1f2937;
+}
+
+.markdown-content pre {
+  background-color: #f3f4f6;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.dark .markdown-content pre {
+  background-color: #1f2937;
+}
+
+.markdown-content strong {
+  font-weight: 600;
+  color: #111827;
+}
+
+.dark .markdown-content strong {
+  color: #ffffff;
+}
+
+.markdown-content em {
+  font-style: italic;
+}
+
+/* Smooth transitions for slide changes */
+.slide-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Custom scrollbar for content */
+.markdown-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.markdown-content::-webkit-scrollbar-track {
+  background-color: #f3f4f6;
+}
+
+.dark .markdown-content::-webkit-scrollbar-track {
+  background-color: #1f2937;
+}
+
+.markdown-content::-webkit-scrollbar-thumb {
+  background-color: #9ca3af;
+  border-radius: 9999px;
+}
+
+.dark .markdown-content::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+}
+
+.markdown-content::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
+}
+
+.dark .markdown-content::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
+}

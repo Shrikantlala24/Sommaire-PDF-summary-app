@@ -15,13 +15,13 @@ const uploadedFiles: Array<{
   processed: boolean;
 }> = [];
 
-// FileRouter for your app, can upload PDFs and documents
+// FileRouter for your app - PDF uploads only
 export const ourFileRouter = {
-  // PDF and document uploader
+  // PDF uploader - only PDF files allowed
   pdfUploader: f({
     pdf: {
-      maxFileSize: "16MB",
-      maxFileCount: 5,
+      maxFileSize: "32MB",
+      maxFileCount: 1,
     },
   })
     .middleware(async ({ req }) => {
@@ -33,9 +33,14 @@ export const ourFileRouter = {
       return { userId: userId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
-      console.log("Upload complete for userId:", metadata.userId);
+      console.log("PDF upload complete for userId:", metadata.userId);
       console.log("file url", file.url);
       console.log("file name", file.name);
+      
+      // Validate file type
+      if (!file.name.toLowerCase().endsWith('.pdf')) {
+        throw new UploadThingError("Only PDF files are allowed");
+      }
       
       // Store file information
       const fileRecord = {
@@ -50,7 +55,6 @@ export const ourFileRouter = {
       
       uploadedFiles.push(fileRecord);
       
-      // TODO: Process PDF with LangChain here
       console.log("PDF ready for processing:", fileRecord);
       
       // Here you can save file info to your database
@@ -62,49 +66,6 @@ export const ourFileRouter = {
       //     size: file.size,
       //   },
       // });
-      
-      return { 
-        uploadedBy: metadata.userId, 
-        fileName: file.name,
-        fileUrl: file.url,
-        fileKey: file.key
-      };
-    }),
-
-  // Document uploader (DOC, DOCX, TXT)
-  documentUploader: f({
-    text: {
-      maxFileSize: "8MB",
-      maxFileCount: 3,
-    },
-  })
-    .middleware(async ({ req }) => {
-      const { userId } = await auth();
-      
-      if (!userId) throw new UploadThingError("Unauthorized");
-      
-      return { userId: userId };
-    })
-    .onUploadComplete(async ({ metadata, file }) => {
-      console.log("Document upload complete for userId:", metadata.userId);
-      console.log("file url", file.url);
-      console.log("file name", file.name);
-      
-      // Store file information
-      const fileRecord = {
-        id: file.key,
-        userId: metadata.userId,
-        fileName: file.name,
-        fileUrl: file.url,
-        fileSize: file.size,
-        uploadedAt: new Date(),
-        processed: false
-      };
-      
-      uploadedFiles.push(fileRecord);
-      
-      // TODO: Process document with LangChain here
-      console.log("Document ready for processing:", fileRecord);
       
       return { 
         uploadedBy: metadata.userId, 

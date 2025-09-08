@@ -121,11 +121,7 @@ export default function UploadPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ 
-            fileKey: file.key,
-            fileName: file.name,
-            fileUrl: file.url 
-          }),
+          body: JSON.stringify({ fileKey: file.key }),
         });
 
       progressTracker.updateProgress(30, 'Processing PDF content...')
