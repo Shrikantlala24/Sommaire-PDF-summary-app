@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { pdfProcessor } from '@/lib/pdf-processor';
 import { GeminiSummarizationService } from '@/lib/gemini-service';
+import { createSummary, updateDocumentStatus, getUserByClerkId, sql } from '@/lib/db';
 
 interface ProcessedSummary {
   title: string;
@@ -53,6 +54,13 @@ export async function POST(request: NextRequest) {
     console.log(`🤖 Starting Gemini summarization for ${fileName}...`);
     const summaryResult = await geminiService.generateSummary(fullText, fileName);
 
+    // Update document status to completed
+    try {
+      await updateDocumentStatus(fileKey, 'completed');
+    } catch (dbError) {
+      console.error('Failed to update document status:', dbError);
+    }
+
     const response: ProcessedSummary = {
       title: summaryResult.title,
       slides: summaryResult.slides,
@@ -63,6 +71,33 @@ export async function POST(request: NextRequest) {
         processingTime: processedPDF.processingTime + summaryResult.processingTime
       }
     };
+
+    // Save summary to database
+    try {
+      const user = await getUserByClerkId(userId);
+      if (user) {
+        // Find the document record
+        const documentQuery = await sql`
+          SELECT id FROM documents WHERE file_key = ${fileKey} AND user_id = ${user.id}
+        `;
+        
+        if (documentQuery.length > 0) {
+          const documentId = documentQuery[0].id;
+          
+          await createSummary(
+            documentId,
+            summaryResult.title,
+            summaryResult.slides,
+            response.metadata
+          );
+          
+          console.log('✅ Summary saved to database');
+        }
+      }
+    } catch (dbError) {
+      console.error('Failed to save summary to database:', dbError);
+      // Continue even if database save fails
+    }
 
     console.log(`✅ Full processing complete for ${fileName}`);
     

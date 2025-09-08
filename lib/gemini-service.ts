@@ -37,9 +37,11 @@ export class GeminiSummarizationService {
 
 1. Generate an engaging title based on the document content
 2. Create 5-7 summary slides, each focusing on a key aspect of the document
-3. Each slide should be detailed but concise (150-200 words per slide)
+3. Each slide should be detailed but well-structured (200-300 words per slide)
 4. Format each slide content using Markdown for better readability
 5. Cover the main themes, key points, conclusions, and any important data/insights
+6. DO NOT include slide numbers (like "Slide 1:", "Slide 2:", etc.) in the content
+7. Focus on creating logical, well-chunked content sections
 
 Document filename: ${fileName}
 Document content:
@@ -49,15 +51,15 @@ Please respond in the following JSON format with markdown-formatted content (use
 {
   "title": "Generated title based on content",
   "slides": [
-    "# Slide Title 1\n\n**Overview and Introduction**\n\nDetailed content with *emphasis* and proper formatting...\n\n- Key point 1\n- Key point 2\n- Key point 3",
-    "# Slide Title 2\n\n**Key Themes and Concepts**\n\nDetailed content with proper markdown formatting...\n\n> Important quote or insight\n\n## Subsection\n\nMore details...",
-    "# Slide Title 3\n\n**Main Findings**\n\nDetailed content...\n\n1. First finding\n2. Second finding\n3. Third finding",
-    "# Slide Title 4\n\n**Supporting Details**\n\nDetailed content...\n\nCode or technical details if applicable",
-    "# Slide Title 5\n\n**Conclusions and Implications**\n\nDetailed content with proper formatting...\n\n**Key Takeaways:**\n- Point 1\n- Point 2"
+    "# Introduction and Overview\n\n**Core Purpose**\n\nDetailed introduction explaining the main purpose and scope of the document...\n\n- Key foundational concept 1\n- Key foundational concept 2\n- Key foundational concept 3\n\n*Context and background information that sets the stage for understanding the content.*",
+    "# Key Themes and Concepts\n\n**Main Ideas**\n\nDetailed explanation of the primary themes and concepts...\n\n> Important insight or quote from the document\n\n## Sub-theme Analysis\n\nBreakdown of specific areas:\n- Theme 1 with detailed explanation\n- Theme 2 with supporting evidence\n- Theme 3 with practical implications",
+    "# Detailed Analysis and Findings\n\n**Research Results**\n\nComprehensive analysis of findings and data...\n\n1. Primary finding with explanation\n2. Secondary finding with context\n3. Supporting evidence and methodology\n\n**Statistical Insights:**\n- Key metric 1\n- Key metric 2\n- Trend analysis",
+    "# Implementation and Applications\n\n**Practical Applications**\n\nHow the content can be applied in real-world scenarios...\n\n### Technical Implementation\n- Step-by-step process\n- Required resources\n- Expected outcomes\n\n### Best Practices\n- Recommended approaches\n- Common pitfalls to avoid",
+    "# Conclusions and Future Directions\n\n**Summary of Key Points**\n\nFinal thoughts and synthesis of the main ideas...\n\n**Action Items:**\n- Immediate next steps\n- Long-term considerations\n- Areas for further research\n\n*The document concludes with forward-looking insights and recommendations.*"
   ]
 }
 
-Use proper markdown formatting including headers, bold text, italic text, lists, blockquotes, and code blocks where appropriate. Make sure the response is valid JSON and each slide provides meaningful, well-formatted content about the document.`;
+Important: Create well-structured, meaningful chunks of content. Each slide should stand alone while contributing to the overall narrative. Use proper markdown formatting including headers, bold text, italic text, lists, blockquotes, and code blocks where appropriate. DO NOT use slide numbers in the content itself.`;
 
       const result = await this.model.generateContent(prompt);
       const response = await result.response;

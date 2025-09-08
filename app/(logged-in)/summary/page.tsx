@@ -60,7 +60,7 @@ ${summary.processingTime ? `**Processing Time:** ${summary.processingTime}ms` : 
 
 ## Summary
 
-${summary.slides.map((slide, index) => `### Slide ${index + 1}\n\n${slide}`).join('\n\n')}
+${summary.slides.map((slide) => slide).join('\n\n---\n\n')}
 `;
 
     const blob = new Blob([markdown], { type: 'text/markdown' });

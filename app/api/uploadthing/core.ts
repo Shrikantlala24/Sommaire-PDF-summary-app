@@ -1,6 +1,7 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 import { auth } from '@clerk/nextjs/server';
+import { createUser, getUserByClerkId, createDocument } from '@/lib/db';
 
 const f = createUploadthing();
 
@@ -42,7 +43,29 @@ export const ourFileRouter = {
         throw new UploadThingError("Only PDF files are allowed");
       }
       
-      // Store file information
+      try {
+        // Get or create user in database
+        let user = await getUserByClerkId(metadata.userId);
+        if (!user) {
+          user = await createUser(metadata.userId);
+        }
+
+        // Create document record in database
+        const document = await createDocument(
+          user.id,
+          file.name,
+          file.url,
+          file.key,
+          file.size
+        );
+
+        console.log("Document saved to database:", document);
+      } catch (error) {
+        console.error("Error saving document to database:", error);
+        // Continue with the upload even if database save fails
+      }
+      
+      // Also keep in-memory storage for backward compatibility
       const fileRecord = {
         id: file.key,
         userId: metadata.userId,
