@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Source_Sans_3 as FontSans } from "next/font/google";
 import "./globals.css";
+import { FontSans } from "next/font/google";
+import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
+import { Suspense } from "react";
 
 const fontSans = FontSans({
   variable: "--font-sans",

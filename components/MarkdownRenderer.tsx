@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { cn } from '@/lib/utils';
+import { memo } from 'react';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
 import './markdown-styles.css';
@@ -10,7 +12,7 @@ interface MarkdownRendererProps {
   className?: string;
 }
 
-export function MarkdownRenderer({ content, className = "" }: MarkdownRendererProps) {
+export const MarkdownRenderer = memo(function MarkdownRenderer({ content, className = "" }: MarkdownRendererProps) {
   return (
     <div className={`markdown-content ${className}`}>
       <ReactMarkdown
@@ -134,7 +136,7 @@ export function MarkdownRenderer({ content, className = "" }: MarkdownRendererPr
       </ReactMarkdown>
     </div>
   );
-}
+});
 
 // Helper function to extract plain text from markdown for export
 export function markdownToPlainText(markdown: string): string {

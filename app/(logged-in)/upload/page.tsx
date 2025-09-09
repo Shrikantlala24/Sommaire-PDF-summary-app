@@ -2,8 +2,9 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation';
-import { FileText, CheckCircle, AlertTriangle, Loader2, X, Upload, Trash2 } from 'lucide-react'
+import { FileText, CheckCircle, AlertTriangle, Loader2, X, Upload, Trash2, ArrowLeft } from 'lucide-react'
 import { UserButton } from '@clerk/nextjs'
+import { Button } from '@/components/ui/button'
 import { UploadDropzone } from '../../../lib/uploadthing'
 import { 
   AppError, 
@@ -201,39 +202,40 @@ export default function UploadPage() {
   const isProcessing = [LoadingState.PROCESSING, LoadingState.SUMMARIZING].includes(loadingState)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Header */}
-      <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Enhanced Header */}
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => router.push('/dashboard')}
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Dashboard
+              </Button>
+              <div className="h-6 w-px bg-border" />
+              <div className="flex items-center gap-2">
+                <Upload className="h-5 w-5 text-blue-600" />
+                <span className="font-semibold text-foreground">Upload PDF</span>
               </div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                Upload Document
-              </h1>
             </div>
-            <UserButton 
-              appearance={{
-                elements: {
-                  avatarBox: "w-8 h-8"
-                }
-              }}
-            />
+            <UserButton />
           </div>
         </div>
-      </header>
+      </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        {/* Page Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            Upload Your PDF Document
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Upload your PDF documents to create beautiful visual summaries with AI.
+      <div className="container mx-auto px-6 py-8">
+        {/* Title Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+            Transform Your PDF into Interactive Slides
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Upload any PDF document and our AI will create a beautiful, interactive summary presentation with markdown-formatted slides.
           </p>
         </div>
 
@@ -372,7 +374,7 @@ export default function UploadPage() {
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   )
 }

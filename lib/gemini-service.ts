@@ -121,36 +121,43 @@ Important: Create well-structured, meaningful chunks of content. Each slide shou
       const processingTime = Date.now() - startTime;
       const wordCount = text.split(/\s+/).length;
       
-      // Ensure all slides are strings with proper markdown content extraction
+      // Ensure all slides are proper markdown strings
       const finalSlides = (parsedResponse.slides || ["Summary unavailable - please try again."]).map((slide: any) => {
+        // If it's already a string, return as-is (should be markdown)
         if (typeof slide === 'string') {
           return slide;
-        } else if (typeof slide === 'object' && slide !== null) {
-          // If it's an object, extract the content and format as markdown
-          // Check for 'slide' property first (current Gemini format)
+        }
+        
+        // If it's an object, convert to proper markdown
+        if (typeof slide === 'object' && slide !== null) {
+          // Handle different object formats and convert to markdown
           if (slide.slide && typeof slide.slide === 'string') {
             return slide.slide;
           }
-          // Check for 'content' property (alternative format)
           if (slide.content && typeof slide.content === 'string') {
-            // If there's a slide_title, format as markdown header
-            if (slide.slide_title) {
-              return `# ${slide.slide_title}\n\n${slide.content}`;
+            if (slide.slide_title || slide.title) {
+              return `# ${slide.slide_title || slide.title}\n\n${slide.content}`;
             }
             return slide.content;
           }
           if (slide.text) return String(slide.text);
           if (slide.summary) return String(slide.summary);
-          // If it has a title but no content, use the title as header
-          if (slide.slide_title) return `# ${slide.slide_title}`;
-          // Otherwise convert to readable markdown format
+          if (slide.slide_title || slide.title) return `# ${slide.slide_title || slide.title}`;
+          
+          // Convert object to markdown format
           return Object.keys(slide).map(key => {
+            const value = slide[key];
             if (key === 'slide_title' || key === 'title') {
-              return `# ${slide[key]}`;
+              return `# ${value}`;
             }
-            return `**${key}**: ${slide[key]}`;
+            if (key === 'content' || key === 'text' || key === 'summary') {
+              return value;
+            }
+            return `**${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}**: ${value}`;
           }).join('\n\n');
         }
+        
+        // Fallback: convert to string
         return String(slide);
       });
       

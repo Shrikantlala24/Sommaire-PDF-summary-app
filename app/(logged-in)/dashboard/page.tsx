@@ -13,8 +13,10 @@ import {
   Eye, 
   Download,
   Loader2,
-  BarChart3
+  BarChart3,
+  Upload
 } from 'lucide-react';
+import { UserButton } from '@clerk/nextjs';
 
 interface SummaryItem {
   id: string;
@@ -140,23 +142,37 @@ export default function DashboardPage() {
   const { summaries } = dashboardData;
 
   return (
-    <div className="container mx-auto px-6 py-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome back, {clerkUser?.firstName || 'there'}! Manage your PDF summaries.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Enhanced Header */}
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+                <p className="text-sm text-muted-foreground">AI-Powered PDF Summaries</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <Button 
+                onClick={() => router.push('/upload')}
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Upload PDF
+              </Button>
+              <UserButton />
+            </div>
+          </div>
         </div>
-        <Button onClick={() => router.push('/upload')} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          New Summary
-        </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="container mx-auto px-6 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Summaries</CardTitle>
@@ -268,6 +284,7 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }
