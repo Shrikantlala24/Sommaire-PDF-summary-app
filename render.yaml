@@ -3,7 +3,7 @@ services:
     name: sommaire
     env: node
     plan: free
-    buildCommand: npm run render:build
+    buildCommand: bash ./build.sh
     startCommand: npm start
     envVars:
       - key: NODE_ENV
