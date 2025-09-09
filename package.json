@@ -7,12 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:init": "powershell -File ./scripts/init-db.ps1",
-    "db:test": "powershell -File ./scripts/test-db.ps1",
-    "db:migrate": "powershell -File ./scripts/migrate-db.ps1",
-    "db:migrate:node": "node scripts/migrate-db.js",
-    "db:add-clerk-id": "powershell -File ./scripts/add-clerk-id.ps1",
-    "clean:build": "powershell -File ./scripts/clean-rebuild.ps1"
+    "install:prod": "npm install --legacy-peer-deps",
+    "build:prod": "npm run install:prod && npm run build",
+    "render:build": "node scripts/render-deploy.js",
+    "db:init": "node scripts/init-db.js",
+    "db:test": "node scripts/test-db.js",
+    "db:migrate": "node scripts/migrate-db.js",
+    "db:add-clerk-id": "node db/add-clerk-id.js",
+    "clean:build": "rm -rf .next && npm run build"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.9",
