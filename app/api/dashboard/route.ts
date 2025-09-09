@@ -11,21 +11,33 @@ export async function GET() {
     const summaries = await getUserSummaries(user.id);
 
     // Transform summaries to match dashboard expectations
-    const transformedSummaries = summaries.map(summary => ({
-      id: summary.id,
-      title: summary.title,
-      slides: JSON.parse(summary.summary_text), // Parse the JSON stored slides
-      metadata: {
-        fileName: summary.file_name,
-        pageCount: 0, // We don't store this separately, could be calculated
-        wordCount: 0, // We don't store this separately, could be calculated
-        processingTime: 0 // We don't store this separately
-      },
-      created_at: summary.created_at,
-      original_filename: summary.file_name,
-      file_size: 0, // We don't store this in pdf_summaries table
-      upload_timestamp: summary.created_at
-    }));
+    const transformedSummaries = summaries.map(summary => {
+      let slides = [];
+      try {
+        // Try to parse the JSON, if it fails, use an empty array
+        slides = summary.summary_text ? JSON.parse(summary.summary_text) : [];
+      } catch (error) {
+        console.error(`Failed to parse summary_text for summary ID ${summary.id}:`, error);
+        // If parsing fails, use an empty array
+        slides = [];
+      }
+
+      return {
+        id: summary.id,
+        title: summary.title,
+        slides: slides,
+        metadata: {
+          fileName: summary.file_name,
+          pageCount: 0, // We don't store this separately, could be calculated
+          wordCount: 0, // We don't store this separately, could be calculated
+          processingTime: 0 // We don't store this separately
+        },
+        created_at: summary.created_at,
+        original_filename: summary.file_name,
+        file_size: 0, // We don't store this in pdf_summaries table
+        upload_timestamp: summary.created_at
+      };
+    });
 
     return NextResponse.json({
       success: true,

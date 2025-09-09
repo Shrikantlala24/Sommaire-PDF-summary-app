@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { FontSans } from "next/font/google";
+import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -9,10 +9,10 @@ import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
 import { Suspense } from "react";
 
-const fontSans = FontSans({
+const fontSans = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ['200','300','400','500','600','700','800','900']
+  weight: ['400','500','600','700']
 });
 
 export const metadata: Metadata = {
@@ -36,7 +36,10 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <body
-          className={`${fontSans.variable} font-sans antialiased`}
+          className={cn(
+            "min-h-screen bg-background font-sans antialiased",
+            fontSans.variable
+          )}
         >
           <NextSSRPlugin
             routerConfig={extractRouterConfig(ourFileRouter)}
@@ -47,7 +50,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <Suspense fallback={<div>Loading...</div>}>
+              {children}
+            </Suspense>
           </ThemeProvider>
         </body>
       </html>
