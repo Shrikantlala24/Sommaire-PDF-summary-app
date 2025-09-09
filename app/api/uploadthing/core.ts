@@ -1,7 +1,7 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 import { auth } from '@clerk/nextjs/server';
-import { createUser, getUserByClerkId, createDocument } from '@/lib/db';
+import { createUser, getUserById, createDocument } from '@/lib/db';
 
 const f = createUploadthing();
 
@@ -45,7 +45,7 @@ export const ourFileRouter = {
       
       try {
         // Get or create user in database
-        let user = await getUserByClerkId(metadata.userId);
+        let user = await getUserById(metadata.userId);
         if (!user) {
           user = await createUser(metadata.userId);
         }

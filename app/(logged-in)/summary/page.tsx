@@ -18,15 +18,39 @@ export default function SummaryPage() {
     let slides: string[] = [];
     try {
       const rawSlides = JSON.parse(searchParams.get('slides') || '[]');
-      // Each slide comes as a JSON string containing an object with a 'slide' property
-      slides = rawSlides.map((slideData: string) => {
-        try {
-          const parsed = JSON.parse(slideData);
-          return parsed.slide || slideData;
-        } catch {
-          // If it's not a JSON string, return it as is
-          return slideData;
+      // Handle different slide data formats
+      slides = rawSlides.map((slideData: any) => {
+        if (typeof slideData === 'string') {
+          try {
+            // Try to parse as JSON first
+            const parsed = JSON.parse(slideData);
+            // Check if it has a 'slide' property (new format)
+            if (parsed.slide) {
+              return parsed.slide;
+            }
+            // Check if it has 'title' and 'content' properties (old format)
+            if (parsed.title && parsed.content) {
+              return `# ${parsed.title}\n\n${parsed.content}`;
+            }
+            // If it's a parsed object but doesn't match expected format, stringify it
+            return typeof parsed === 'object' ? JSON.stringify(parsed) : parsed;
+          } catch {
+            // If parsing fails, treat as plain markdown
+            return slideData;
+          }
+        } else if (typeof slideData === 'object') {
+          // Direct object format
+          if (slideData.slide) {
+            return slideData.slide;
+          }
+          if (slideData.title && slideData.content) {
+            return `# ${slideData.title}\n\n${slideData.content}`;
+          }
+          // Fallback: stringify the object
+          return JSON.stringify(slideData);
         }
+        // Fallback: convert to string
+        return String(slideData);
       });
     } catch {
       slides = [];
@@ -107,55 +131,60 @@ ${summary.slides.map((slide) => slide).join('\n\n---\n\n')}
       </div>
 
       {/* Carousel */}
-      <div className="bg-card rounded-lg border p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Summary Slides</h2>
-          <div className="text-sm text-muted-foreground">
-            Slide {currentSlide + 1} of {summary.slides.length}
+      <div className="bg-card rounded-lg border shadow-sm p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold">Summary Content</h2>
+          <div className="text-sm text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
+            {currentSlide + 1} of {summary.slides.length}
           </div>
         </div>
 
-        {/* Slide content */}
-        <div className="min-h-[400px] mb-6 slide-transition">
-          <div className="max-w-none">
+        {/* Slide content with better styling */}
+        <div className="min-h-[500px] mb-8">
+          <div className="max-w-none bg-background/50 rounded-lg p-6 border">
             <MarkdownRenderer 
               content={summary.slides[currentSlide]} 
-              className="prose-lg slide-transition"
+              className="prose prose-slate dark:prose-invert max-w-none prose-headings:text-foreground prose-p:text-foreground/90 prose-li:text-foreground/90 prose-strong:text-foreground"
             />
           </div>
         </div>
 
-        {/* Navigation buttons */}
+        {/* Enhanced navigation */}
         <div className="flex items-center justify-between">
           <Button
             variant="outline"
+            size="default"
             onClick={() => setCurrentSlide(Math.max(0, currentSlide - 1))}
             disabled={currentSlide === 0}
+            className="px-6"
           >
-            Previous
+            ← Previous
           </Button>
 
-          {/* Slide indicators */}
-          <div className="flex gap-2">
+          {/* Slide indicators with better design */}
+          <div className="flex gap-1 bg-muted/30 p-2 rounded-full">
             {summary.slides.map((_, index) => (
               <button
                 key={index}
-                className={`w-3 h-3 rounded-full transition-colors ${
+                className={`w-2 h-2 rounded-full transition-all duration-200 ${
                   index === currentSlide
-                    ? 'bg-primary'
-                    : 'bg-muted hover:bg-muted-foreground/20'
+                    ? 'bg-primary scale-125'
+                    : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
                 }`}
                 onClick={() => setCurrentSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
               />
             ))}
           </div>
 
           <Button
             variant="outline"
+            size="default"
             onClick={() => setCurrentSlide(Math.min(summary.slides.length - 1, currentSlide + 1))}
             disabled={currentSlide === summary.slides.length - 1}
+            className="px-6"
           >
-            Next
+            Next →
           </Button>
         </div>
       </div>

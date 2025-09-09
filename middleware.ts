@@ -16,14 +16,14 @@ export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
   const url = req.nextUrl;
 
-  // If user is signed in and tries to access public auth pages, redirect to upload
+  // If user is signed in and tries to access public auth pages, redirect to dashboard
   if (userId && (url.pathname === '/sign-in' || url.pathname === '/sign-up')) {
-    return NextResponse.redirect(new URL('/upload', req.url));
+    return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
-  // If user is signed in and on landing page, redirect to upload
+  // If user is signed in and on landing page, redirect to dashboard
   if (userId && url.pathname === '/') {
-    return NextResponse.redirect(new URL('/upload', req.url));
+    return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
   // Protect routes that require authentication

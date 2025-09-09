@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "init-db": "node scripts/init-db.js",
+    "db:init": "curl -X POST http://localhost:3000/api/init-db"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.9",
