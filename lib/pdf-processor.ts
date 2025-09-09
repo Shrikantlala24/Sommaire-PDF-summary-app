@@ -39,11 +39,9 @@ export class PDFProcessingService {
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       
-      // Create a Blob from the buffer for PDFLoader
+      // Node.js doesn't have File constructor, use Blob instead
       const blob = new Blob([buffer], { type: 'application/pdf' });
       
-      // Use PDFLoader with the blob
-      // Following LangChain documentation for PDFLoader
       const loader = new PDFLoader(blob as any, {
         splitPages: true, // Split into individual pages (default behavior)
         parsedItemSeparator: " " // Join text elements with spaces (default)

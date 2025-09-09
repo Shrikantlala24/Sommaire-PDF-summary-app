@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { initDatabase, sql } from '@/lib/db';
+import { sql } from '@/lib/db';
 
 /**
  * API endpoint to initialize the database schema
@@ -21,12 +21,20 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
     
-    // Initialize database schema
-    await initDatabase();
+    // Add clerk_id column if it doesn't exist
+    try {
+      await sql`
+        ALTER TABLE users 
+        ADD COLUMN IF NOT EXISTS clerk_id VARCHAR(255)
+      `;
+      console.log('✅ Added clerk_id column to users table');
+    } catch (error) {
+      console.error('❌ Error adding clerk_id column:', error);
+    }
     
     return NextResponse.json({ 
       success: true, 
-      message: 'Database initialized successfully with new schema (users, pdf_summaries)' 
+      message: 'Database initialized successfully with clerk_id column added' 
     });
   } catch (error) {
     console.error('❌ Database initialization failed:', error);

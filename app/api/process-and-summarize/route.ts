@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pdfProcessor } from '@/lib/pdf-processor';
 import { GeminiSummarizationService } from '@/lib/gemini-service';
-import { createPdfSummary, getUserByClerkId, updateSummaryStatus } from '@/lib/db';
+import { createPdfSummary } from '@/lib/db';
 import { getOrCreateUserFromClerk } from '@/lib/clerk-helpers';
 
 interface ProcessedSummary {

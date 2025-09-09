@@ -75,9 +75,9 @@ export default function DashboardPage() {
       title: summary.title,
       slides: JSON.stringify(summary.slides),
       fileName: summary.original_filename,
-      pageCount: summary.metadata.pageCount?.toString() || '0',
-      wordCount: summary.metadata.wordCount?.toString() || '0',
-      processingTime: summary.metadata.processingTime?.toString() || '0'
+      pageCount: summary.metadata?.pageCount?.toString() || '0',
+      wordCount: summary.metadata?.wordCount?.toString() || '0',
+      processingTime: summary.metadata?.processingTime?.toString() || '0'
     });
     
     router.push(`/summary?${params.toString()}`);
@@ -239,7 +239,7 @@ export default function DashboardPage() {
                     
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">File Size:</span>
-                      <span className="font-medium">{formatFileSize(summary.file_size)}</span>
+                      <span className="font-medium">{formatFileSize(summary.file_size || 0)}</span>
                     </div>
                     
                     <div className="flex justify-between text-sm">

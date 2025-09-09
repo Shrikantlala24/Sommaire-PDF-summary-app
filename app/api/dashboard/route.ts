@@ -10,11 +10,28 @@ export async function GET() {
     // Get user's summaries
     const summaries = await getUserSummaries(user.id);
 
+    // Transform summaries to match dashboard expectations
+    const transformedSummaries = summaries.map(summary => ({
+      id: summary.id,
+      title: summary.title,
+      slides: JSON.parse(summary.summary_text), // Parse the JSON stored slides
+      metadata: {
+        fileName: summary.file_name,
+        pageCount: 0, // We don't store this separately, could be calculated
+        wordCount: 0, // We don't store this separately, could be calculated
+        processingTime: 0 // We don't store this separately
+      },
+      created_at: summary.created_at,
+      original_filename: summary.file_name,
+      file_size: 0, // We don't store this in pdf_summaries table
+      upload_timestamp: summary.created_at
+    }));
+
     return NextResponse.json({
       success: true,
       data: {
         user,
-        summaries,
+        summaries: transformedSummaries,
         isNewUser: summaries.length === 0
       }
     });

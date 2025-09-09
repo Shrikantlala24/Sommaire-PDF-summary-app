@@ -196,6 +196,45 @@ export async function updateSummaryStatus(summaryId: string, status: string) {
   return result[0] as DatabasePdfSummary | undefined;
 }
 
+// For compatibility with the uploadthing API which expects a createDocument function
+export async function createDocument(
+  userId: string,
+  fileName: string,
+  fileUrl: string,
+  fileKey: string,
+  fileSize: number
+) {
+  // Since we're using a simplified schema, we'll create a placeholder summary
+  // that will be updated later with the actual summary
+  const result = await sql`
+    INSERT INTO pdf_summaries (
+      user_id, 
+      original_file_url, 
+      summary_text, 
+      title, 
+      file_name, 
+      status
+    )
+    VALUES (
+      ${userId}, 
+      ${fileUrl}, 
+      'Processing...', 
+      ${fileName}, 
+      ${fileName}, 
+      'processing'
+    )
+    RETURNING *
+  `;
+  
+  // Add file metadata to the returned object to match expected interface
+  const summary = result[0] as DatabasePdfSummary;
+  return {
+    ...summary,
+    fileKey,
+    fileSize
+  };
+}
+
 // Payment operations
 export async function createPayment(
   amount: number,

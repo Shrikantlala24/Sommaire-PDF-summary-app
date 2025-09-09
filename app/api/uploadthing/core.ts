@@ -1,7 +1,7 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
-import { auth } from '@clerk/nextjs/server';
-import { createUser, getUserById, createDocument } from '@/lib/db';
+import { createPdfSummary } from '@/lib/db';
+import { getOrCreateUserFromClerk } from '@/lib/clerk-helpers';
 
 const f = createUploadthing();
 
@@ -26,12 +26,19 @@ export const ourFileRouter = {
     },
   })
     .middleware(async ({ req }) => {
-      // Use Clerk for authentication
-      const { userId } = await auth();
-      
-      if (!userId) throw new UploadThingError("Unauthorized");
-      
-      return { userId: userId };
+      // Use Clerk for authentication via our helper
+      try {
+        const { user, clerkUser } = await getOrCreateUserFromClerk();
+        
+        // Return user details for use in onUploadComplete
+        return { 
+          userId: user.id,
+          userEmail: user.email
+        };
+      } catch (error) {
+        console.error('Authentication error:', error);
+        throw new UploadThingError("Unauthorized");
+      }
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("PDF upload complete for userId:", metadata.userId);
@@ -44,24 +51,20 @@ export const ourFileRouter = {
       }
       
       try {
-        // Get or create user in database
-        let user = await getUserById(metadata.userId);
-        if (!user) {
-          user = await createUser(metadata.userId);
-        }
-
-        // Create document record in database
-        const document = await createDocument(
-          user.id,
-          file.name,
+        // Create an initial PDF summary record with "pending" status
+        // The actual summary will be updated when processing is complete
+        await createPdfSummary(
+          metadata.userId,
           file.url,
-          file.key,
-          file.size
+          "", // Empty summary text until processing completes
+          file.name, // Use filename as initial title
+          file.name,
+          "pending" // Set status as pending
         );
 
-        console.log("Document saved to database:", document);
+        console.log("PDF file record saved to database, ready for processing");
       } catch (error) {
-        console.error("Error saving document to database:", error);
+        console.error("Error saving to database:", error);
         // Continue with the upload even if database save fails
       }
       
